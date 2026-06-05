@@ -2,7 +2,7 @@
 
 Send Icinga2 notifications to the Prometheus Alertmanager.
 
-Is transforms the Icinga2 notification into JSON data and sends this data to the Alertmanager API: https://prometheus.io/docs/alerting/latest/alerts_api/
+It transforms the Icinga2 notification into JSON data and sends this data to the Alertmanager API: https://prometheus.io/docs/alerting/latest/alerts_api/
 
 Other Icinga and Prometheus integrations we provide:
 
