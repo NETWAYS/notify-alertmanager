@@ -92,22 +92,33 @@ else
   ALERTNAME="IcingaHost"
 fi
 
+# Simple JSON string escaping (handles quotes, backslashes, newlines)
+escape_json() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
+}
+
 # Build labels
 build_labels_json() {
   local json
   json=$(cat <<LABELS
 {
-  "alertname": "${ALERTNAME}",
-  "icinga_host": "${HOST_NAME}"
+  "alertname": "$(escape_json "$ALERTNAME")",
+  "icinga_host": "$(escape_json "$HOST_NAME")"
 LABELS
 )
 
-  [[ -n "$HOST_ADDRESS" ]] && json+=",\n  \"icinga_host_address\": \"${HOST_ADDRESS}\""
-  [[ -n "$HOST_DISPLAY_NAME" ]] && json+=",\n  \"icinga_host_display_name\": \"${HOST_DISPLAY_NAME}\""
+  [[ -n "$HOST_ADDRESS" ]] && json+=",\n  \"icinga_host_address\": \"$(escape_json "$HOST_ADDRESS")\""
+  [[ -n "$HOST_DISPLAY_NAME" ]] && json+=",\n  \"icinga_host_display_name\": \"$(escape_json "$HOST_DISPLAY_NAME")\""
 
   if [[ "$OBJECT_TYPE" == "service" ]]; then
     json+=",\n  \"icinga_service\": \"${SERVICE_NAME}\""
-    [[ -n "$SERVICE_DISPLAY_NAME" ]] && json+=",\n  \"service_display_name\": \"${SERVICE_DISPLAY_NAME}\""
+    [[ -n "$SERVICE_DISPLAY_NAME" ]] && json+=",\n  \"service_display_name\": \"$(escape_json "$SERVICE_DISPLAY_NAME")\""
   fi
 
   # Extra labels from -l key=value,key2=value2
@@ -154,17 +165,6 @@ ANNOT
   printf '%b' "$json"
 }
 
-# Simple JSON string escaping (handles quotes, backslashes, newlines)
-escape_json() {
-  local s="$1"
-  s="${s//\\/\\\\}"
-  s="${s//\"/\\\"}"
-  s="${s//$'\n'/\\n}"
-  s="${s//$'\r'/\\r}"
-  s="${s//$'\t'/\\t}"
-  printf '%s' "$s"
-}
-
 # Assemble the full payload
 LABELS_JSON=$(build_labels_json)
 ANNOTATIONS_JSON=$(build_annotations_json)
@@ -192,7 +192,7 @@ NOW_RFC3339=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 if is_resolved "${NOTIFICATION_TYPE^^}"; then
     PAYLOAD+=",\"endsAt\": \"$(escape_json "$NOW_RFC3339")\""
 else
-    PAYLOAD+=",\"startAt\": \"$(escape_json "$NOW_RFC3339")\""
+    PAYLOAD+=",\"startsAt\": \"$(escape_json "$NOW_RFC3339")\""
 fi
 
 PAYLOAD+="}]"
