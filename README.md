@@ -13,9 +13,10 @@ Other Icinga and Prometheus integrations we provide:
 
 ## Installation
 
-Requirements:
+`notify-alertmanager.sh` is a shell script. Requirements:
 
-- `curl`
+- `curl` for sending the alert to the Alertmanager
+- `date` for the alert's `startsAt/endsAt` timestamp
 
 ## Usage
 
@@ -25,7 +26,7 @@ Usage: notify-alertmanager.sh [OPTIONS]
 Options:
   -t TYPE              Object type: host | service
   -T NOTIFICATION_TYPE Icinga notification type: PROBLEM | RECOVERY | ACKNOWLEDGEMENT | FLAPPINGSTART | FLAPPINGSTOP | DOWNTIMESTART | DOWNTIMEEND
-  -H HOST_NAME         Icinga host name ($host.name$)
+  -H HOST_NAME         Icinga host name
   -u ALERTMANAGER_URL  Alertmanager base URL (default: http://localhost:9093)
   -c COMMENT           Notification comment
   -a AUTHOR            Notification author
@@ -36,12 +37,12 @@ Options:
   -h                   Show this help
 
 Host options:
-  -d DISPLAY_NAME Host display name ($host.display_name$)
-  -A ADDRESS      Host address ($host.address$)
+  -d DISPLAY_NAME      Host display name (optional)
+  -A ADDRESS           Host address (optional)
 
 Service options:
-  -n SERVICE_NAME         Service name ($service.name$)
-  -N SERVICE_DISPLAY_NAME Service display name ($service.display_name$)
+  -n SERVICE_NAME         Service name (required when TYPE is service)
+  -N SERVICE_DISPLAY_NAME Service display name (optional)
 ```
 
 Examples:
