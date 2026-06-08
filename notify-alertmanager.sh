@@ -113,12 +113,12 @@ build_labels_json() {
 LABELS
 )
 
-  [[ -n "$HOST_ADDRESS" ]] && json+=",\n  \"icinga_host_address\": \"${HOST_ADDRESS}\""
-  [[ -n "$HOST_DISPLAY_NAME" ]] && json+=",\n  \"icinga_host_display_name\": \"${HOST_DISPLAY_NAME}\""
+  [[ -n "$HOST_ADDRESS" ]] && json+=",\n  \"icinga_host_address\": \"$(escape_json "$HOST_ADDRESS")\""
+  [[ -n "$HOST_DISPLAY_NAME" ]] && json+=",\n  \"icinga_host_display_name\": \"$(escape_json "$HOST_DISPLAY_NAME")\""
 
   if [[ "$OBJECT_TYPE" == "service" ]]; then
     json+=",\n  \"icinga_service\": \"${SERVICE_NAME}\""
-    [[ -n "$SERVICE_DISPLAY_NAME" ]] && json+=",\n  \"service_display_name\": \"${SERVICE_DISPLAY_NAME}\""
+    [[ -n "$SERVICE_DISPLAY_NAME" ]] && json+=",\n  \"service_display_name\": \"$(escape_json "$SERVICE_DISPLAY_NAME")\""
   fi
 
   # Extra labels from -l key=value,key2=value2
