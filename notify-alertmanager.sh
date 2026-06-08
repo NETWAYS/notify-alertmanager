@@ -25,23 +25,23 @@ Usage: notify-alertmanager.sh [OPTIONS]
 Options:
   -t TYPE              Object type: host | service
   -T NOTIFICATION_TYPE Icinga notification type: PROBLEM | RECOVERY | ACKNOWLEDGEMENT | FLAPPINGSTART | FLAPPINGSTOP | DOWNTIMESTART | DOWNTIMEEND
-  -H HOST_NAME         Icinga host name (\$host.name\$)
-  -u ALERTMANAGER_URL Alertmanager base URL (default: $ALERTMANAGER_URL)
-  -c COMMENT          Notification comment
-  -a AUTHOR           Notification author
-  -i ICINGA_URL       Icinga URL for the object (used in annotations)
-  -l LABELS           Extra labels as comma-separated key=value pairs
-  -s STATE            Object state: UP | DOWN | UNREACHABLE | OK | WARNING | CRITICAL | UNKNOWN
-  -v                  Verbose output
-  -h                  Show this help
+  -H HOST_NAME         Icinga host name
+  -u ALERTMANAGER_URL  Alertmanager base URL (default: $ALERTMANAGER_URL)
+  -c COMMENT           Notification comment
+  -a AUTHOR            Notification author
+  -i ICINGA_URL        Icinga URL for the object (used in annotations)
+  -l LABELS            Extra labels as comma-separated key=value pairs
+  -s STATE             Object state: UP | DOWN | UNREACHABLE | OK | WARNING | CRITICAL | UNKNOWN
+  -v                   Verbose output
+  -h                   Show this help
 
 Host options:
-  -d DISPLAY_NAME Host display name (\$host.display_name\$)
-  -A ADDRESS      Host address (\$host.address\$)
+  -d DISPLAY_NAME      Host display name (optional)
+  -A ADDRESS           Host address (optional)
 
 Service options:
-  -n SERVICE_NAME         Service name (\$service.name\$)
-  -N SERVICE_DISPLAY_NAME Service display name (\$service.display_name\$)
+  -n SERVICE_NAME         Service name (required when TYPE is service)
+  -N SERVICE_DISPLAY_NAME Service display name (optional)
 EOF
   exit 3
 }
