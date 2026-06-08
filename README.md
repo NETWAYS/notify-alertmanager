@@ -46,12 +46,20 @@ Service options:
 
 Examples:
 
-```
+```bash
+# Service
 notify-alertmanager.sh -t service -T PROBLEM -H myhost \
 -d "My Host" -A 192.168.1.1 -s CRITICAL -n "ping" -N "Ping Check" -u http://localhost:9093 -l severity=critical
 
 notify-alertmanager.sh -t service -T RECOVERY -H myhost \
 -d "My Host" -A 192.168.1.1 -s CRITICAL -n "ping" -N "Ping Check" -u http://localhost:9093 -l severity=critical
+
+# Host
+notify-alertmanager.sh -t host -T DOWN -H myhost \
+-d "My Host" -A 192.168.1.1 -s CRITICAL -u http://localhost:9093 -l severity=critical,priority=high
+
+notify-alertmanager.sh -t host -T UP -H myhost \
+-d "My Host" -A 192.168.1.1 -s CRITICAL -u http://localhost:9093 -l severity=critical,priority=high
 ```
 
 Note that the Icinga notification type (PROBLEM, RECOVERY, etc.) and state (OK, CRITICAL, etc.) are not used a labels in the final alert.
