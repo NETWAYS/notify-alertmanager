@@ -25,14 +25,22 @@ Usage: notify-alertmanager.sh [OPTIONS]
 
 Options:
   -t TYPE              Object type: host | service
-  -T NOTIFICATION_TYPE Icinga notification type: PROBLEM | RECOVERY | ACKNOWLEDGEMENT | FLAPPINGSTART | FLAPPINGSTOP | DOWNTIMESTART | DOWNTIMEEND
+  -T NOTIFICATION_TYPE Icinga notification type:
+                       PROBLEM | RECOVERY | ACKNOWLEDGEMENT |
+                       FLAPPINGSTART | FLAPPINGSTOP | DOWNTIMESTART | DOWNTIMEEND
   -H HOST_NAME         Icinga host name
   -u ALERTMANAGER_URL  Alertmanager base URL (default: http://localhost:9093)
+  -U USER:PASSWORD     Basic authentication credentials
+  -C CERT_FILE         Client certificate file (PEM)
+  -K KEY_FILE          Client private key file (PEM)
+  -S CA_FILE           CA certificate file (PEM)
   -c COMMENT           Notification comment
   -a AUTHOR            Notification author
   -i ICINGA_URL        Icinga URL for the object (used in annotations)
   -l LABELS            Extra labels as comma-separated key=value pairs
-  -s STATE             Object state: UP | DOWN | UNREACHABLE | OK | WARNING | CRITICAL | UNKNOWN
+  -s STATE             Object state:
+                       UP | DOWN | UNREACHABLE |
+                       OK | WARNING | CRITICAL | UNKNOWN
   -v                   Verbose output
   -h                   Show this help
 
@@ -44,6 +52,8 @@ Service options:
   -n SERVICE_NAME         Service name (required when TYPE is service)
   -N SERVICE_DISPLAY_NAME Service display name (optional)
 ```
+
+The options `ALERTMANAGER_URL` and `ALERTMANAGER_BASIC_AUTH` can be set via environment variables.
 
 Examples:
 

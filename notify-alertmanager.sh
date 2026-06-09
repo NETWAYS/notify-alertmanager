@@ -3,6 +3,7 @@
 set -euo pipefail
 
 ALERTMANAGER_URL="${ALERTMANAGER_URL:-http://localhost:9093}"
+ALERTMANAGER_BASIC_AUTH=${ALERTMANAGER_BASIC_AUTH:-}
 TIMEOUT=10
 NOTIFICATION_TYPE=""
 OBJECT_TYPE=""
@@ -14,6 +15,9 @@ SERVICE_NAME=""
 SERVICE_DISPLAY_NAME=""
 NOTIFICATION_COMMENT=""
 NOTIFICATION_AUTHOR=""
+CA_CERT=""
+CLIENT_CERT=""
+CLIENT_KEY=""
 ICINGA_URL=""
 EXTRA_LABELS=""
 VERBOSE=0
@@ -26,7 +30,11 @@ Options:
   -t TYPE              Object type: host | service
   -T NOTIFICATION_TYPE Icinga notification type: PROBLEM | RECOVERY | ACKNOWLEDGEMENT | FLAPPINGSTART | FLAPPINGSTOP | DOWNTIMESTART | DOWNTIMEEND
   -H HOST_NAME         Icinga host name
-  -u ALERTMANAGER_URL  Alertmanager base URL (default: $ALERTMANAGER_URL)
+  -u ALERTMANAGER_URL  Alertmanager base URL (env: ALERTMANAGER_URL)
+  -U USER:PASSWORD     Basic authentication credentials (env: ALERTMANAGER_BASIC_AUTH)
+  -C CERT_FILE         Client certificate file (PEM)
+  -K KEY_FILE          Client private key file (PEM)
+  -S CA_FILE           CA certificate file (PEM)
   -c COMMENT           Notification comment
   -a AUTHOR            Notification author
   -i ICINGA_URL        Icinga URL for the object (used in annotations)
@@ -47,7 +55,7 @@ EOF
 }
 
 # Parsing arguments
-while getopts ":t:T:H:d:A:n:N:s:u:c:a:i:l:vh" opt; do
+while getopts ":t:T:H:d:A:n:N:s:u:c:a:i:l:vhU:C:K:S:" opt; do
     case $opt in
         t) OBJECT_TYPE="$OPTARG" ;;
         T) NOTIFICATION_TYPE="$OPTARG" ;;
@@ -58,6 +66,10 @@ while getopts ":t:T:H:d:A:n:N:s:u:c:a:i:l:vh" opt; do
         N) SERVICE_DISPLAY_NAME="$OPTARG" ;;
         s) STATE="$OPTARG" ;;
         u) ALERTMANAGER_URL="$OPTARG" ;;
+        U) ALERTMANAGER_BASIC_AUTH="$OPTARG" ;;
+        C) CLIENT_CERT="$OPTARG" ;;
+        K) CLIENT_KEY="$OPTARG" ;;
+        S) CA_CERT="$OPTARG" ;;
         c) NOTIFICATION_COMMENT="$OPTARG" ;;
         a) NOTIFICATION_AUTHOR="$OPTARG" ;;
         i) ICINGA_URL="$OPTARG" ;;
@@ -208,7 +220,7 @@ if [[ "$VERBOSE" -eq 1 ]]; then
 fi
 
 # Sending the notification
-HTTP_RESPONSE=$(curl \
+CURL_CMD=(curl \
   --silent \
   --show-error \
   --max-time "$TIMEOUT" \
@@ -216,11 +228,18 @@ HTTP_RESPONSE=$(curl \
   --write-out "\n%{http_code}" \
   --request POST \
   --header "Content-Type: application/json" \
-  --data "$PAYLOAD" \
-  "$ENDPOINT" 2>&1) || {
+  --data "$PAYLOAD"
+)
+
+[[ -n "$ALERTMANAGER_BASIC_AUTH" ]] && CURL_CMD+=(--user "$ALERTMANAGER_BASIC_AUTH")
+[[ -n "$CLIENT_CERT" ]] && CURL_CMD+=(--cert "$CLIENT_CERT")
+[[ -n "$CLIENT_KEY" ]] && CURL_CMD+=(--key "$CLIENT_KEY")
+[[ -n "$CA_CERT" ]] && CURL_CMD+=(--cacert "$CA_CERT")
+
+HTTP_RESPONSE=$("${CURL_CMD[@]}" "$ENDPOINT" 2>&1) || {
     echo "ERROR: Alertmanager unreachable at $ENDPOINT" >&2
     exit 2
-  }
+}
 
 HTTP_BODY=$(echo "$HTTP_RESPONSE" | sed '$d')
 HTTP_CODE=$(echo "$HTTP_RESPONSE" | tail -n1)
