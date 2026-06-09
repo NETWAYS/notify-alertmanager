@@ -99,9 +99,9 @@ fi
 
 # Determine alert state and severity
 if [[ "$OBJECT_TYPE" == "service" ]]; then
-  ALERTNAME="IcingaService"
+  ALERTNAME="IcingaNotificationForService"
 else
-  ALERTNAME="IcingaHost"
+  ALERTNAME="IcingaNotificationForHost"
 fi
 
 # Simple JSON string escaping (handles quotes, backslashes, newlines)
